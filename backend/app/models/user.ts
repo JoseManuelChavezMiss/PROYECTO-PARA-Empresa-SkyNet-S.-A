@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
-import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column, computed } from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
 import Rol from './rol.js'
@@ -45,8 +45,19 @@ export default class User extends compose(BaseModel, AuthFinder) {
     foreignKey: 'rol_id',
   })
   declare rol: BelongsTo<typeof Rol>
+  @computed()
+  public get rolNombre() {
+    return (this as any).rol?.nombre || null
+  }
 
-  static accessTokens = DbAccessTokensProvider.forModel(User)
+  // static accessTokens = DbAccessTokensProvider.forModel(User)
+  static accessTokens = DbAccessTokensProvider.forModel(User, {
+    expiresIn: '1h',
+    prefix: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
+    table: 'auth_access_tokens',
+    type: 'auth_token',
+    tokenSecretLength: 40,
+  })
 
 
 }

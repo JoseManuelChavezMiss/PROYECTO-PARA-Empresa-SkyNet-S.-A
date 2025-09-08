@@ -10,7 +10,7 @@ export default class Rol extends BaseModel {
   declare id: number
 
   @column()
-  declare nombre: string
+  declare name: string
 
   // ✅ Relación uno a muchos: Un rol puede tener muchos usuarios
   @hasMany(() => User, {

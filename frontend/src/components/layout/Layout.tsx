@@ -11,7 +11,7 @@ const Layout: React.FC = () => {
       <Navbar setVisible={setVisible} /> {/* quitado visible */}
       <div className="flex">
         <Sidebar visible={visible} setVisible={setVisible} />
-        <main className="content">
+        <main className="content flex-1 w-full">
           <Outlet />
         </main>
       </div>

@@ -17,13 +17,15 @@ export default function LoginPage() {
         try {
             const response = await login({ email, password });
             if (response.token) {
+                localStorage.setItem('auth_token', response.token);
+                localStorage.setItem('role', response.user.rol.nombre);
                 showToast({
                     severity: 'success',
                     summary: 'Login exitoso',
                     detail: 'Bienvenido',
                     life: 3000,
                 });
-                setTimeout(() => navigate('/clientes'), 800);
+                setTimeout(() => navigate('/usuarios'), 800);
             } else {
                 showToast({
                     severity: 'error',
@@ -49,8 +51,7 @@ export default function LoginPage() {
         }
     }
     return (
-        <div className="flex justify-content-center align-items-center h-screen bg-light-blue" style={{ backgroundColor: '#f0f0f0' }}>
-            {/* AGREGA EL COMPONENTE TOAST AQUÍ */}
+        <div className="flex justify-content-center align-items-center h-screen bg-light-blue" style={{ backgroundColor: '#fdfdfdff' }}>
             <Toast ref={toast} />
             <div className="card">
                 <div className="flex flex-column md:flex-row">

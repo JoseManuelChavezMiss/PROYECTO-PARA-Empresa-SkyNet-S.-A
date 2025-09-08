@@ -26,28 +26,67 @@ export default class UsersController {
         }
     }
 
+    // ...existing code...
     async login({ request }: HttpContext) {
         try {
-            const data = request.only(['email', 'password']);
+            const { email, password } = request.only(['email', 'password'])
 
+            // Verifica credenciales (valida password)
+            const user = await User.verifyCredentials(email, password)
 
+            // Carga relación rol solo con id y nombre
+            await user.load('rol', (q) => q.select(['id', 'name']))
 
-
-            const user = await User.verifyCredentials(data.email, data.password);
             const token = await User.accessTokens.create(user)
+           
             return {
+                status: 200,
+                mensaje: 'Login exitoso',
                 type: 'Bearer',
-                token: token.value!.release()
-            };
-        } catch (error) {
+                token: token.value!.release(),
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    nombre: user.nombre,
+                    apellido: user.apellido,
+                    rol: {
+                        id: user.rol_id,
+                        nombre: user.rol.name
+                    }
+                }
+            }
+        } catch (error: any) {
             return {
                 status: 401,
                 mensaje: 'Credenciales incorrectas',
                 error: error.message
-            };
+            }
         }
-
     }
+    // ...existing code...
+
+    // async login({ request }: HttpContext) {
+    //     try {
+    //         const data = request.only(['email', 'password']);
+
+
+
+
+    //         const user = await User.verifyCredentials(data.email, data.password);
+    //         const token = await User.accessTokens.create(user)
+    //         return {
+    //             type: 'Bearer',
+    //             token: token.value!.release()
+    //         };
+    //     } catch (error) {
+    //         return {
+    //             status: 401,
+    //             mensaje: 'Credenciales incorrectas',
+    //             error: error.message
+    //         };
+    //     }
+
+    // }
 
     async logout({ auth, response }: HttpContext) {
         try {

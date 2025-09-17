@@ -25,6 +25,14 @@ export interface Usuario {
   rolNombre: string | null;
 }
 
+export type CrearUsuarioInput = {
+  nombre: string;
+  apellido: string;
+  email: string;
+  password: string;
+  rol_id: number; 
+};
+
 const listarUsuarios = async (): Promise<Usuario[]> => {
     const response = await axiosClient.get<ApiUsuario[]>('/api/usuariosLista');
     return response.data.map(usuario => ({
@@ -34,4 +42,18 @@ const listarUsuarios = async (): Promise<Usuario[]> => {
         updatedAt: new Date(usuario.updatedAt),
     }));
 };
-export { listarUsuarios };
+
+const crearUsuario = async (
+  input: CrearUsuarioInput
+): Promise<{ usuario: ApiUsuario; mensaje?: string }> => {
+  const { data } = await axiosClient.post<{ mensaje?: string; usuario?: ApiUsuario }>(
+    '/api/registrarUsuario',
+    input
+  )
+  if (!data?.usuario) throw new Error(data?.mensaje || 'No se pudo crear el usuario')
+  return { usuario: data.usuario, mensaje: data.mensaje }
+}
+// ...existing code...
+
+
+export { listarUsuarios, crearUsuario };

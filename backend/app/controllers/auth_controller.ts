@@ -9,7 +9,7 @@ export default class UsersController {
         try {
             const userData = request.only(['nombre', 'apellido', 'email', 'password', 'rol_id'])
             const existe = await User.findBy('email', userData.email)
-
+            console.log(userData);
             //verificar que se mande un rol_id
             if (!userData.rol_id) {
                 return { mensaje: 'El rol_id es obligatorio' }
@@ -26,7 +26,6 @@ export default class UsersController {
         }
     }
 
-    // ...existing code...
     async login({ request }: HttpContext) {
         try {
             const { email, password } = request.only(['email', 'password'])
@@ -38,7 +37,7 @@ export default class UsersController {
             await user.load('rol', (q) => q.select(['id', 'name']))
 
             const token = await User.accessTokens.create(user)
-           
+
             return {
                 status: 200,
                 mensaje: 'Login exitoso',
@@ -63,30 +62,6 @@ export default class UsersController {
             }
         }
     }
-    // ...existing code...
-
-    // async login({ request }: HttpContext) {
-    //     try {
-    //         const data = request.only(['email', 'password']);
-
-
-
-
-    //         const user = await User.verifyCredentials(data.email, data.password);
-    //         const token = await User.accessTokens.create(user)
-    //         return {
-    //             type: 'Bearer',
-    //             token: token.value!.release()
-    //         };
-    //     } catch (error) {
-    //         return {
-    //             status: 401,
-    //             mensaje: 'Credenciales incorrectas',
-    //             error: error.message
-    //         };
-    //     }
-
-    // }
 
     async logout({ auth, response }: HttpContext) {
         try {
@@ -113,4 +88,21 @@ export default class UsersController {
             });
         }
     }
+
+    public async me({ auth, response }: HttpContext) {
+        await auth.authenticate()
+        const user = auth.user!
+        await user.load('rol', (q) => q.select(['id', 'name']))
+        return response.ok({
+            user: {
+                id: user.id,
+                email: user.email,
+                nombre: user.nombre,
+                apellido: user.apellido,
+                rol: { id: user.rol_id, name: user.rol?.name ?? null },
+            },
+        })
+    }
+
+
 }

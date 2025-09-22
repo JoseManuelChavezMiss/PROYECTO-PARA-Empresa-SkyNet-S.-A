@@ -8,6 +8,7 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
 import UsuariosPage from "./pages/UsuariosPage";
+import ClientesPage from "./pages/ClientesPage";
 
 function App() {
   return (
@@ -31,6 +32,14 @@ function App() {
             element={
               <PrivateRoute roles={["Administrador"]}>
                 <UsuariosPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/clientes"
+            element={
+              <PrivateRoute roles={["Administrador"]}>
+                <ClientesPage />
               </PrivateRoute>
             }
           />

@@ -11,6 +11,7 @@ import AuthController from '#controllers/auth_controller'
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 import UsersController from '#controllers/users_controller'
+import ClientesController from '#controllers/clientes_controller'
 
 router.get('/', async () => {
   return {
@@ -28,6 +29,14 @@ router.group(() => {
       .as('usuarios.crear')              
       .use(middleware.moduloAccess())
 
+    router.post('/registrarCliente', [ClientesController, 'registrar'])
+      .as('clientes.crear')
+      .use(middleware.moduloAccess())
+      
+    router.get('/clientesLista', [ClientesController, 'listar'])
+      .as('clientes.listar')
+      .use(middleware.moduloAccess())
+    
     router.get('/logout', [AuthController, 'logout'])
 
     router.get('/auth/me', [AuthController, 'me']).as('auth.me')

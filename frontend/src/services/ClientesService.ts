@@ -34,13 +34,23 @@ const listarClientes = async (): Promise<Cliente[]> => {
   return data.data;
 };
 
-const crearCliente = async (input: CrearClienteInput): Promise<{ cliente: Cliente; mensaje?: string }> => {
-  const { data } = await axiosClient.post<{ mensaje?: string; cliente?: Cliente }>(
-    '/api/registrarCliente',
-    input
-  );
-  if (!data?.cliente) throw new Error(data?.mensaje || 'No se pudo crear el cliente');
-  return { cliente: data.cliente, mensaje: data.mensaje };
+const crearCliente = async (
+  input: CrearClienteInput
+): Promise<{ ok: boolean; mensaje: string; cliente?: Cliente }> => {
+  try {
+    const { data } = await axiosClient.post('/api/registrarCliente', input);
+    return {
+      ok: true,
+      mensaje: data?.mensaje ?? 'Cliente creado',
+      cliente: data?.cliente,
+    };
+  } catch (error: any) {
+    return {
+      ok: false,
+      mensaje: error?.response?.data?.mensaje ?? error?.message ?? 'Error al crear cliente',
+    };
+  }
 };
+
 
 export { listarClientes, crearCliente };

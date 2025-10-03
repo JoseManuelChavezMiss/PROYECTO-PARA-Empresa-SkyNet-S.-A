@@ -20,13 +20,13 @@ export default class ClientesController {
                 longitud: datos.longitud,
                 estado: true // Por defecto, el estado es true (activo)
             })
-            return response.status(201).json({
+            return response.status(200).json({
                 mensaje: 'Cliente registrado exitosamente',
                 data: cliente
             })
         } catch (error) {
             return response.status(400).json({
-                mensaje: 'Error al registrar el cliente',
+                mensaje: 'Error al registrar el cliente o el email ya existe',
                 error: error.message
             })
         }

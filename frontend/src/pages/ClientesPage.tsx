@@ -11,21 +11,19 @@ const ClientesPage = () => {
   const [loading, setLoading] = useState(true);
   const [visible, setVisible] = useState(false);
   const [selectedCoords, setSelectedCoords] = useState<{ lat: number; lng: number } | null>(null)
+  const [visible1, setVisible1] = useState(false);
 
   useEffect(() => {
-    const fetchClientes = async () => {
-      try {
-        const data = await listarClientes();
-        setClientes(data);
-      } catch (error) {
-        console.error("Error al cargar clientes:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchClientes();
-  }, []);
+    // evita ejecutar en el primer render
+    console.log('visible1 cambió:', visible1);
+    if (visible1 === false) {
+      setLoading(true);
+      listarClientes()
+        .then(setClientes)
+        .catch((err) => console.error("Error al cargar clientes:", err))
+        .finally(() => setLoading(false));
+    }
+  }, [visible1]);
 
   const abrirMapa = (row: Cliente) => {
     console.log('Coordenadas del cliente:', row.latitud, row.longitud)
@@ -90,18 +88,26 @@ const ClientesPage = () => {
       <h2 className="text-xl font-bold mb-4">Gestión de Clientes</h2>
 
       <div className="mb-4">
-        <button className="p-button p-component">
+        <button className="p-button p-component" onClick={() => setVisible1(true)}>
           <i className="pi pi-plus"></i>
           <span>Nuevo Cliente</span>
         </button>
       </div>
+      <Dialog
+        header="Nuevo Cliente"
+        visible={visible1}
+        modal
+        style={{ width: '60vw' }}
+        onHide={() => setVisible1(false)}>
+        <ClientesForm />
+      </Dialog>
 
       <div>
         {loading ? (<p>Cargando clientes...</p>) : (
           <Tablas data={clientes} columns={columns} rows={5} />
         )}
       </div>
-       <Dialog
+      <Dialog
         header="Ubicación del cliente"
         visible={visible}
         modal

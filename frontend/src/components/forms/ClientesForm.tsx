@@ -1,43 +1,97 @@
+
+import { useState, useRef } from "react";
+import ClientesCrearMap from "../maps/ClientesCrearMap";
+import { crearCliente } from "../../services/ClientesService";
+import { Toast } from "primereact/toast";
+import { useToast } from "../../hooks/useToast";
+import { listarClientes } from "../../services/ClientesService";
+
 const ClientesForm = () => {
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [loading, setLoading] = useState(false);
+  const { showToast, toast } = useToast();
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+
+    const input = {
+      nombre: (formData.get("nombre") as string) || "",
+      apellido: (formData.get("apellido") as string) || "",
+      email: (formData.get("email") as string) || "",
+      telefono: (formData.get("telefono") as string) || "",
+      direccion: (formData.get("direccion") as string) || "",
+      latitud: Number(formData.get("lat") ?? coords?.lat ?? NaN),
+      longitud: Number(formData.get("lng") ?? coords?.lng ?? NaN),
+    };
+
+    if (!input.nombre || !input.apellido || !input.email || !input.telefono || !input.direccion) {
+      showToast({ severity: "warn", summary: "Campos requeridos", detail: "Completa todos los campos.", life: 4000 });
+      return;
+    }
+    if (!isFinite(input.latitud) || !isFinite(input.longitud)) {
+      showToast({ severity: "warn", summary: "Ubicación requerida", detail: "Selecciona una ubicación en el mapa.", life: 4000 });
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const { cliente, mensaje } = await crearCliente(input);
+      console.log("Creado:", cliente);
+      showToast({ severity: "info", summary: "Cliente creado", detail: mensaje ?? "Cliente creado correctamente", life: 4000 });
+      listarClientes()
+      setCoords(null);
+    } catch (err: any) {
+      console.error("Error al crear cliente:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <form className="p-fluid">
-      <div className="field">
-        <label htmlFor="nombre">Nombre</label>
-        <input id="nombre" className="p-inputtext" placeholder="Nombre" />
-      </div>
+    <>
+      <Toast ref={toast} position="top-right" />
+      <form className="p-fluid" onSubmit={handleSubmit}>
+        <div className="field">
+          <label htmlFor="nombre">Nombre</label>
+          <input id="nombre" name="nombre" className="p-inputtext" placeholder="Nombre" />
+        </div>
 
-      <div className="field">
-        <label htmlFor="apellido">Apellido</label>
-        <input id="apellido" className="p-inputtext" placeholder="Apellido" />
-      </div>
+        <div className="field">
+          <label htmlFor="apellido">Apellido</label>
+          <input id="apellido" name="apellido" className="p-inputtext" placeholder="Apellido" />
+        </div>
 
-      <div className="field">
-        <label htmlFor="email">Email</label>
-        <input type="email" id="email" className="p-inputtext" placeholder="email@dominio.com" />
-      </div>
+        <div className="field">
+          <label htmlFor="email">Email</label>
+          <input type="email" id="email" name="email" className="p-inputtext" placeholder="email@dominio.com" />
+        </div>
 
-      <div className="field">
-        <label htmlFor="telefono">Teléfono</label>
-        <input id="telefono" className="p-inputtext" placeholder="+51 987654321" />
-      </div>
+        <div className="field">
+          <label htmlFor="telefono">Teléfono</label>
+          <input id="telefono" name="telefono" className="p-inputtext" placeholder="+502 1234 5678" />
+        </div>
 
-      <div className="field">
-        <label htmlFor="direccion">Dirección</label>
-        <input id="direccion" className="p-inputtext" placeholder="Av. Principal 123, Lima" />
-      </div>
+        <div className="field">
+          <label htmlFor="direccion">Dirección</label>
+          <input id="direccion" name="direccion" className="p-inputtext" placeholder="Dirección" />
+        </div>
 
-      <div className="field">
-        <label htmlFor="latitud">Latitud</label>
-        <input type="number" step="0.000001" id="latitud" className="p-inputtext" placeholder="-12.046374" />
-      </div>
+        <div className="field">
+          <label>Ubicación Cliente</label>
+          <ClientesCrearMap
+            initialLngLat={[-89.8225, 16.8086]}
+            onCoordinatesChange={(c) => setCoords(c)}
+          />
+          <input type="hidden" name="lat" value={coords?.lat ?? ""} />
+          <input type="hidden" name="lng" value={coords?.lng ?? ""} />
+        </div>
 
-      <div className="field">
-        <label htmlFor="longitud">Longitud</label>
-        <input type="number" step="0.000001" id="longitud" className="p-inputtext" placeholder="-77.042793" />
-      </div>
-
-      <button type="submit" className="p-button p-component">Guardar</button>
-    </form>
+        <button type="submit" className="p-button p-component" disabled={loading}>
+          {loading ? "Guardando..." : "Guardar"}
+        </button>
+      </form>
+    </>
   );
 };
 

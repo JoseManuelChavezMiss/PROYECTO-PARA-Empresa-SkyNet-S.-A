@@ -53,7 +53,7 @@ const crearUsuario = async (
   if (!data?.usuario) throw new Error(data?.mensaje || 'No se pudo crear el usuario')
   return { usuario: data.usuario, mensaje: data.mensaje }
 }
-// ...existing code...
+
 
 
 export { listarUsuarios, crearUsuario };

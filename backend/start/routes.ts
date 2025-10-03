@@ -12,6 +12,7 @@ import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 import UsersController from '#controllers/users_controller'
 import ClientesController from '#controllers/clientes_controller'
+import VisitasController from '#controllers/visitas_controller'
 
 router.get('/', async () => {
   return {
@@ -36,6 +37,21 @@ router.group(() => {
     router.get('/clientesLista', [ClientesController, 'listar'])
       .as('clientes.listar')
       .use(middleware.moduloAccess())
+
+      /*
+           Rutas para todo lo relacionado con las visitas      
+      */
+    router.get('/visitasLista', [VisitasController, 'listar'])
+      .as('visitas.listar')
+      .use(middleware.moduloAccess())
+
+    router.post('/crearVisita', [VisitasController, 'crear'])
+      .as('visitas.crear')
+      .use(middleware.moduloAccess())
+    router.get('/visitasEntidades/:opcion?', [VisitasController, 'listarEntidades'])
+      .as('visitas.lsitar')
+      .use(middleware.moduloAccess())
+
     
     router.get('/logout', [AuthController, 'logout'])
 

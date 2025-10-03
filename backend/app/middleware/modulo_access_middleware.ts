@@ -21,11 +21,12 @@ const rolModuloPermitido: Record<string, string[]> = {
  */
 function moduloFromRouteName(name?: string): string | undefined {
   if (!name) return
-  if (name.includes('usuarios'))   return 'Usuarios'
-  if (name.includes('clientes'))   return 'Clientes'
-  if (name.includes('visitas'))    return 'Visitas'
-  if (name.includes('config'))     return 'Configuracion'
-  if (name.includes('reportes'))   return 'Reportes'
+  const n = name.toLowerCase()
+  if (n.includes('usuarios'))  return 'Usuarios'
+  if (n.includes('clientes'))  return 'Clientes'
+  if (n.includes('visitas') || n.includes('visita')) return 'Visitas'
+  if (n.includes('config'))    return 'Configuracion'
+  if (n.includes('reportes'))  return 'Reportes'
   return
 }
 

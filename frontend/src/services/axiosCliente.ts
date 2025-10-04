@@ -16,5 +16,16 @@ axiosClient.interceptors.request.use((config) => {
   return config;
 });
 
+axiosClient.interceptors.response.use(
+  (r) => r,
+  (error) => {
+    if (error.response?.status === 401) {
+      console.warn('No autorizado (401).')
+      // opcional: redirigir a login
+    }
+    return Promise.reject(error)
+  }
+)
+
 
 export default axiosClient;

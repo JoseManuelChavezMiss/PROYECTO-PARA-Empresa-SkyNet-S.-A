@@ -10,6 +10,7 @@ import 'primeflex/primeflex.css';
 import UsuariosPage from "./pages/UsuariosPage";
 import ClientesPage from "./pages/ClientesPage";
 import VisitasPage from "./pages/VisitasPage";
+import VisitasTecnico from "./pages/VisitasTecnico";
 
 function App() {
   return (
@@ -50,6 +51,14 @@ function App() {
             element={
               <PrivateRoute roles={["Administrador", "Supervisor"]}>
                 <VisitasPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/visitas-tecnico"
+            element={
+              <PrivateRoute roles={["Tecnico"]}>
+                <VisitasTecnico />
               </PrivateRoute>
             }
           />

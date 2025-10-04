@@ -27,20 +27,20 @@ router.group(() => {
       .use(middleware.moduloAccess())
 
     router.post('/registrarUsuario', [AuthController, 'registrarUsuario'])
-      .as('usuarios.crear')              
+      .as('usuarios.crear')
       .use(middleware.moduloAccess())
 
     router.post('/registrarCliente', [ClientesController, 'registrar'])
       .as('clientes.crear')
       .use(middleware.moduloAccess())
-      
+
     router.get('/clientesLista', [ClientesController, 'listar'])
       .as('clientes.listar')
       .use(middleware.moduloAccess())
 
-      /*
-           Rutas para todo lo relacionado con las visitas      
-      */
+    /*
+         Rutas para todo lo relacionado con las visitas      
+    */
     router.get('/visitasLista', [VisitasController, 'listar'])
       .as('visitas.listar')
       .use(middleware.moduloAccess())
@@ -52,7 +52,11 @@ router.group(() => {
       .as('visitas.lsitar')
       .use(middleware.moduloAccess())
 
-    
+    router.get('/visitasTecnico/:tecnicoId?', [UsersController, 'visitasTecnico'])
+      .as('visitas.tecnico')
+      .use(middleware.moduloAccess())
+
+
     router.get('/logout', [AuthController, 'logout'])
 
     router.get('/auth/me', [AuthController, 'me']).as('auth.me')

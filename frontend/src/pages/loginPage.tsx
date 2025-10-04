@@ -16,16 +16,26 @@ export default function LoginPage() {
     const handleLogin = async () => {
         try {
             const response = await login({ email, password });
+            console.log(response);
             if (response.token) {
                 localStorage.setItem('auth_token', response.token);
                 localStorage.setItem('role', response.user.rol.nombre);
+                localStorage.setItem('idUser', String(response.user.id));
                 showToast({
                     severity: 'success',
                     summary: 'Login exitoso',
                     detail: 'Bienvenido',
                     life: 3000,
                 });
-                setTimeout(() => navigate('/usuarios'), 800);
+                // Redirigir según el rol
+                if (response.user.rol.nombre === 'Administrador') {
+                    navigate('/usuarios');
+                } else if (response.user.rol.nombre === 'Supervisor') {
+                    navigate('/visitas');
+                }
+                else if (response.user.rol.nombre === 'Tecnico') {
+                    navigate('/visitas-tecnico');
+                }
             } else {
                 showToast({
                     severity: 'error',

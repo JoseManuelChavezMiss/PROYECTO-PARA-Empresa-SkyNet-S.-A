@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { use, useEffect, useRef, useState } from 'react'
 import { Dropdown } from 'primereact/dropdown'
-import { listarSupervisores, listarTecnicos, listarClientesVisitas } from '../../services/VisitasService'
-import type { EntidadListado } from '../../services/VisitasService'
-
+import { listarSupervisores, listarTecnicos, listarClientesVisitas, crearVisita } from '../../services/VisitasService'
+import type { EntidadListado, EstadoVisita } from '../../services/VisitasService'
+import { InputTextarea } from "primereact/inputtextarea";
+import { Toast } from 'primereact/toast';
 const estados = [
   { label: 'Pendiente', value: 'Pendiente' },
   { label: 'En Progreso', value: 'En Progreso' },
@@ -15,11 +16,12 @@ const VisitasForm = () => {
   const [tecnicos, setTecnicos] = useState<EntidadListado[]>([])
   const [clientes, setClientes] = useState<EntidadListado[]>([])
   const [loading, setLoading] = useState(true)
+  const toast = useRef(null);
 
   const [selectedSupervisor, setSelectedSupervisor] = useState<EntidadListado | null>(null)
   const [selectedTecnico, setSelectedTecnico] = useState<EntidadListado | null>(null)
   const [selectedCliente, setSelectedCliente] = useState<EntidadListado | null>(null)
-  const [estadoVisita, setEstadoVisita] = useState('Pendiente')
+  const [estadoVisita, setEstadoVisita] = useState<EstadoVisita>('Pendiente' as EstadoVisita)
   const [fechaProgramada, setFechaProgramada] = useState('')
   const [horaProgramada, setHoraProgramada] = useState('')
   const [observaciones, setObservaciones] = useState('')
@@ -44,6 +46,7 @@ const VisitasForm = () => {
     fetchEntidades()
   }, [])
 
+
   const valueTemplate = (ent: EntidadListado | null, placeholder: string) =>
     ent ? <span>{ent.nombre_completo}</span> : <span className="text-color-secondary">{placeholder}</span>
 
@@ -54,25 +57,42 @@ const VisitasForm = () => {
     </div>
   )
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (
+      !selectedCliente?.id ||
+      !selectedSupervisor?.id ||
+      !selectedTecnico?.id
+    ) {
+      if (toast.current) {
+        (toast.current as Toast).show({
+          severity: 'error',
+          summary: 'Debe seleccionar cliente, supervisor y técnico',
+        });
+      }
+      return;
+    }
     const payload = {
-      clienteId: selectedCliente?.id,
-      supervisorId: selectedSupervisor?.id,
-      tecnicoId: selectedTecnico?.id,
+      clienteId: selectedCliente.id,
+      supervisorId: selectedSupervisor.id,
+      tecnicoId: selectedTecnico.id,
       fechaProgramada,
       horaProgramada,
       estadoVisita,
       observaciones,
     }
     console.log('Enviar payload:', payload)
-    // Aquí harías la petición POST
+    const { mensaje } = await crearVisita(payload)
+    if (toast.current) {
+      (toast.current as Toast).show({ severity: 'success', summary: mensaje || 'Visita creada' });
+    }
   }
 
   if (loading) return <p>Cargando datos...</p>
 
   return (
     <form onSubmit={submit} className="p-fluid grid formgrid gap-3">
+      <Toast ref={toast} />
       {/* Cliente */}
       <div className="field col-12 md:col-4">
         <label className="block mb-2">Cliente</label>
@@ -142,7 +162,7 @@ const VisitasForm = () => {
         <label className="block mb-2">Hora</label>
         <input
           type="time"
-            className="w-full p-2 border-round border-1"
+          className="w-full p-2 border-round border-1"
           value={horaProgramada}
           onChange={(e) => setHoraProgramada(e.target.value)}
           required
@@ -168,14 +188,15 @@ const VisitasForm = () => {
       {/* Observaciones */}
       <div className="field col-12">
         <label className="block mb-2">Observaciones</label>
-        <textarea
+        <InputTextarea value={observaciones} onChange={(e) => setObservaciones(e.target.value)} rows={5} cols={30} />
+        {/* <textarea
           className="w-full p-2 border-round border-1"
           rows={3}
           value={observaciones}
           onChange={(e) => setObservaciones(e.target.value)}
           name="observaciones"
           placeholder="Detalles adicionales..."
-        />
+        /> */}
       </div>
 
       <div className="col-12">
@@ -186,3 +207,7 @@ const VisitasForm = () => {
 }
 
 export default VisitasForm
+function showToast(arg0: { severity: string; summary: any; }) {
+  throw new Error('Function not implemented.');
+}
+

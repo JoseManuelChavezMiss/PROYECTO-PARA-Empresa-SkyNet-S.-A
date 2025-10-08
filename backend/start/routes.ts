@@ -13,6 +13,7 @@ import { middleware } from './kernel.js'
 import UsersController from '#controllers/users_controller'
 import ClientesController from '#controllers/clientes_controller'
 import VisitasController from '#controllers/visitas_controller'
+import DetallevisitasController from '#controllers/detallevisitas_controller'
 
 router.get('/', async () => {
   return {
@@ -56,6 +57,9 @@ router.group(() => {
       .as('visitas.tecnico')
       .use(middleware.moduloAccess())
 
+    router.post('/crearDetalleVisita', [DetallevisitasController, 'create'])
+      .as('visitas.crearDetalle')
+      .use(middleware.moduloAccess())
 
     router.get('/logout', [AuthController, 'logout'])
 

@@ -1,90 +1,110 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { Button } from 'primereact/button';
+import { crearDetalleVisita, type CrearDetalleVisitaPayload, type EstadoDetalleVisita } from '../../services/VisitasService';
+import { Toast } from 'primereact/toast'
 
-// PASO 1: Define una nueva interface local para el formulario.
-// Esta es la "forma" de los datos que este componente espera.
-// La exportamos para poder usarla en el componente padre.
 export interface VisitaParaForm {
-  id_visita: string; // La propiedad que faltaba en el tipo del servicio
+  id_visita: string;
   estado_visita: string;
   fecha_programada: string;
   hora_programada: string;
-  observaciones?: string; // Opcional
+  observaciones?: string;
 }
 
-// PASO 2: La interfaz de las props ahora usa nuestra nueva interface local.
 interface DetalleVisitasFormProps {
   visita: VisitaParaForm | null;
 }
 
 const DetalleVisitasForm: React.FC<DetalleVisitasFormProps> = ({ visita }) => {
-  // El resto del componente funciona perfectamente porque la prop `visita`
-  // ahora coincide con la `VisitaParaForm` que sí tiene `id_visita`.
   const [idVisita, setIdVisita] = useState('');
-  const [tipoRegistro, setTipoRegistro] = useState<string | null>(null);
+  const [tipoRegistro, setTipoRegistro] = useState<EstadoDetalleVisita | null>(null)
   const [fechaHora, setFechaHora] = useState<Date | null>(null);
   const [observaciones, setObservaciones] = useState('');
+  const toast = useRef(null);
 
   useEffect(() => {
     if (visita) {
-      setIdVisita(visita.id_visita);
-      setTipoRegistro(visita.estado_visita);
-      setObservaciones(visita.observaciones || '');
-
-    //   const fechaISO = visita.fecha_programada.split('T')[0];
-    //   const fechaCompleta = new Date(`${fechaISO}T${visita.hora_programada}`);
-      setFechaHora(new Date());
+      setIdVisita(visita.id_visita)
+      const isEstadoDetalle = (v: string): v is EstadoDetalleVisita =>
+        ['En Progreso', 'Completada', 'Cancelada'].includes(v)
+      setTipoRegistro(isEstadoDetalle(visita.estado_visita) ? visita.estado_visita : null)
+      setObservaciones(visita.observaciones || '')
+      setFechaHora(new Date())
     } else {
-      setIdVisita('');
-      setTipoRegistro(null);
-      setFechaHora(null);
-      setObservaciones('');
+      setIdVisita('')
+      setTipoRegistro(null)
+      setFechaHora(null)
+      setObservaciones('')
     }
-  }, [visita]);
+  }, [visita])
 
-  const tiposDeRegistro = [
-    { label: 'Pendiente', value: 'Pendiente' },
+  const tiposDeRegistro: { label: string; value: EstadoDetalleVisita }[] = [
     { label: 'En Progreso', value: 'En Progreso' },
     { label: 'Completada', value: 'Completada' },
     { label: 'Cancelada', value: 'Cancelada' }
-  ];
+  ]
 
-  const guardarDatos = () => {
-    const datos = {
-      id_visita: idVisita,
-      estado_visita: tipoRegistro,
-      fecha_hora: fechaHora ? fechaHora.toISOString() : null,
-      observaciones: observaciones
-    };
-    console.log('Datos a guardar:', datos);
-  };
+  const showSuccess = () => {
+    // @ts-ignore
+    toast.current.show({ severity: 'success', summary: 'Éxito', detail: 'Detalle de visita creado', life: 3000 });
+  }
 
+  const showError = () => {
+    // @ts-ignore
+    toast.current.show({ severity: 'error', summary: 'Error', detail: 'Error al crear detalle de visita', life: 3000 });
+  }
+
+  const guardarDatos = async () => {
+    if (!tipoRegistro) {
+      console.error('Seleccione un tipo de registro')
+      return
+    }
+    if (!fechaHora) {
+      console.error('Fecha/hora no válida')
+      return
+    }
+
+    const payload: CrearDetalleVisitaPayload = {
+      idVisita: Number(idVisita),
+      tipoRegistro,
+      fechaHora: fechaHora.toISOString(),
+      observaciones: observaciones || null
+    }
+
+    console.log('Enviando:', payload)
+    const resp = await crearDetalleVisita(payload)
+    if (resp.ok) {
+      showSuccess()
+    } else {
+      showError()
+    }
+  }
   return (
     <div className="p-fluid">
-        {/* Tu JSX no necesita cambios */}
-        <div className="p-field mb-3">
-            <label htmlFor="idvisita">ID Visita</label>
-            <InputText id="idvisita" value={idVisita} disabled />
-        </div>
-        <div className="p-field mb-3">
-            <label htmlFor="tipo_registro">Estado de la Visita</label>
-            <Dropdown id="tipo_registro" value={tipoRegistro} options={tiposDeRegistro} onChange={(e) => setTipoRegistro(e.value)} placeholder="Seleccione un estado" />
-        </div>
-        <div className="p-field mb-3">
-            <label htmlFor="fecha_hora">Fecha y Hora</label>
-            <Calendar id="fecha_hora" value={fechaHora} onChange={(e) => setFechaHora(e.value as Date | null)} showTime hourFormat="24" disabled/>
-        </div>
-        <div className="p-field mb-3">
-            <label htmlFor="observaciones">Observaciones</label>
-            <InputTextarea id="observaciones" value={observaciones} onChange={(e) => setObservaciones(e.target.value)} rows={4} />
-        </div>
-        <div className="p-d-flex p-jc-end">
-            <Button label="Guardar Cambios" icon="pi pi-check" onClick={guardarDatos} />
-        </div>
+      <Toast ref={toast} />
+      <div className="p-field mb-3">
+        <label htmlFor="idvisita">ID Visita</label>
+        <InputText id="idvisita" value={idVisita} disabled />
+      </div>
+      <div className="p-field mb-3">
+        <label htmlFor="tipo_registro">Estado de la Visita</label>
+        <Dropdown id="tipo_registro" value={tipoRegistro} options={tiposDeRegistro} onChange={(e) => setTipoRegistro(e.value)} placeholder="Seleccione un estado" />
+      </div>
+      <div className="p-field mb-3">
+        <label htmlFor="fecha_hora">Fecha y Hora</label>
+        <Calendar id="fecha_hora" value={fechaHora} onChange={(e) => setFechaHora(e.value as Date | null)} showTime hourFormat="24" disabled />
+      </div>
+      <div className="p-field mb-3">
+        <label htmlFor="observaciones">Observaciones</label>
+        <InputTextarea id="observaciones" value={observaciones} onChange={(e) => setObservaciones(e.target.value)} rows={4} />
+      </div>
+      <div className="p-d-flex p-jc-end">
+        <Button label="Guardar Cambios" icon="pi pi-check" onClick={guardarDatos} />
+      </div>
     </div>
   );
 }

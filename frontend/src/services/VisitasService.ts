@@ -1,7 +1,7 @@
 import axiosClient from "./axiosCliente"
 
 export type EstadoVisita = 'Pendiente' | 'En Progreso' | 'Completada' | 'Cancelada'
-
+export type EstadoDetalleVisita = 'En Progreso' | 'Completada' | 'Cancelada'
 export interface VisitaDetallada {
   idVisita: number
   fechaProgramada: string
@@ -50,6 +50,12 @@ export interface VisitaTecnico {
   estado_visita: string
 }
 
+export interface CrearDetalleVisitaPayload {
+  idVisita: number
+  tipoRegistro: EstadoDetalleVisita
+  fechaHora: string
+  observaciones?: string | null
+}
 
 
 export const obtenerVisitasDetalladas = async (): Promise<VisitaDetallada[]> => {
@@ -88,7 +94,64 @@ export async function obtenerVisitasPorTecnico(tecnicoId: number): Promise<Visit
   const { data } = await axiosClient.get<{ ok: boolean; total: number; data: VisitaTecnico[] }>(
     `/api/visitasTecnico/${tecnicoId}`
   )
-  return data.data
+
+  //retonar solo las visitas que esten pendientes o en progreso
+  return data.data.filter(v => v.estado_visita === 'En Progreso')
+  
+
+}
+
+export const crearDetalleVisita = async (
+  input: CrearDetalleVisitaPayload
+): Promise<{ ok: boolean; mensaje: string }> => {
+  try {
+    // Normalizar / validar antes de enviar 
+    const allowed: EstadoDetalleVisita[] = ['En Progreso', 'Completada', 'Cancelada']
+    if (!allowed.includes(input.tipoRegistro)) {
+      return { ok: false, mensaje: 'tipoRegistro inválido' }
+    }
+    if (!input.idVisita || isNaN(Number(input.idVisita))) {
+      return { ok: false, mensaje: 'idVisita inválido' }
+    }
+    if (!input.fechaHora) {
+      return { ok: false, mensaje: 'fechaHora requerida' }
+    }
+
+    // Convertir fecha a formato SQL (YYYY-MM-DD HH:mm:ss) para evitar errores al no parsear en el controlador
+    const fecha = new Date(input.fechaHora)
+    if (isNaN(fecha.getTime())) {
+      return { ok: false, mensaje: 'fechaHora no es una fecha válida' }
+    }
+    const pad = (n: number) => String(n).padStart(2, '0')
+    const fechaSql =
+      `${fecha.getFullYear()}-${pad(fecha.getMonth() + 1)}-${pad(fecha.getDate())} ` +
+      `${pad(fecha.getHours())}:${pad(fecha.getMinutes())}:${pad(fecha.getSeconds())}`
+
+    const payload = {
+      idvisita: Number(input.idVisita),
+      tipo_registro: input.tipoRegistro.trim() as EstadoDetalleVisita,
+      fecha_hora: fechaSql, 
+      observaciones: input.observaciones ?? null,
+    }
+
+    console.debug('Enviando detalle visita (normalizado):', payload)
+
+    const { data } = await axiosClient.post('/api/crearDetalleVisita', payload)
+    return {
+      ok: true,
+      mensaje: data?.mensaje ?? 'Detalle de visita creado',
+    }
+  } catch (error: any) {
+    console.error('Error crearDetalleVisita:', error?.response?.data || error)
+    return {
+      ok: false,
+      mensaje:
+        error?.response?.data?.mensaje ??
+        error?.response?.data?.message ??
+        error?.message ??
+        'Error al crear detalle de visita',
+    }
+  }
 }
 
 export const listarSupervisores = () => listarEntidades(1)

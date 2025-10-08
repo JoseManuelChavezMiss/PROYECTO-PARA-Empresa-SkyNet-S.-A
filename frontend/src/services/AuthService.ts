@@ -26,6 +26,10 @@ interface AuthResponse {
   user: AuthUser;        // objeto usuario completo
 }
 
+interface LogoutResponse {
+  mensaje: string;
+}
+
 const login = async (data: LoginData): Promise<AuthResponse> => {
     const response = await  axiosClient.post<AuthResponse>('/api/auth/login', data);
     if (response.status !== 200) {
@@ -35,4 +39,23 @@ const login = async (data: LoginData): Promise<AuthResponse> => {
     }
 }
 
-export { login };
+const logout = async (): Promise<{ ok: boolean; mensaje: string }> => {
+  try {
+    const token = localStorage.getItem('auth_token')
+    if (!token) return { ok: true, mensaje: 'Sesión ya cerrada' }
+    await axiosClient.get<LogoutResponse>('/api/logout', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+
+    localStorage.removeItem('auth_token')
+    return { ok: true, mensaje: 'Logout exitoso' }
+  } catch (e: any) {
+    if (e?.response?.status === 401) {
+      localStorage.removeItem('auth_token')
+      return { ok: true, mensaje: 'Token inválido. Sesión cerrada.' }
+    }
+    return { ok: false, mensaje: e?.response?.data?.mensaje ?? 'Error al cerrar sesión' }
+  }
+}
+
+export { login, logout };

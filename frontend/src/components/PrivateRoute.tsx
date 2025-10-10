@@ -30,7 +30,7 @@ export const PrivateRoute = ({ children, roles }: PrivateRouteProps) => {
   }, [token, roles]);
 
   if (!token) return <Navigate to="/" replace />;
-  if (!checked) return null;           // loader opcional
+  if (!checked) return null;       
   if (!allowed) return <Navigate to="/" replace />;
   return children;
 };

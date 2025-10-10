@@ -58,4 +58,25 @@ const logout = async (): Promise<{ ok: boolean; mensaje: string }> => {
   }
 }
 
-export { login, logout };
+//metodo para verificar si el usuario Supervisor Tecnico Cliente
+
+const getUserRole = (): string | null => {
+  const user = localStorage.getItem('role');
+  return user
+  
+}
+
+const isAdministrador = (): boolean => {
+  console.log('Role:', getUserRole());
+  return getUserRole() === 'Administrador';
+}
+
+const isSupervisor = (): boolean => {
+  return getUserRole() === 'Supervisor';
+}
+
+const isTecnico = (): boolean => {
+  return getUserRole() === 'Tecnico';
+}
+
+export { login, logout, getUserRole, isAdministrador, isSupervisor, isTecnico };

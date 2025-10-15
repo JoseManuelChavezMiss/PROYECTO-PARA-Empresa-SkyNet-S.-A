@@ -2,7 +2,6 @@
 
 import User from "#models/user";
 import { HttpContext } from "@adonisjs/core/http";
-import { Database } from "@adonisjs/lucid/database";
 import db from "@adonisjs/lucid/services/db";
 
 export default class UsersController {
@@ -42,6 +41,7 @@ export default class UsersController {
           'V.observaciones',
           'C.telefono',
           'C.direccion',
+          'C.email',
           'V.fecha_programada',
           'V.hora_programada',
           'V.estado_visita'

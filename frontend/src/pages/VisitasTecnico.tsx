@@ -53,6 +53,7 @@ const VisitasTecnico = () => {
             try {
                 setLoading(true)
                 const data = await obtenerVisitasPorTecnico(tecnicoId)
+                console.log('Visitas cargadas:', data)
                 setVisitas(data)
             } catch (e: any) {
                 setError('Error al cargar visitas')

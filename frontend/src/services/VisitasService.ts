@@ -57,6 +57,17 @@ export interface CrearDetalleVisitaPayload {
   observaciones?: string | null
 }
 
+export interface CrearReporteVisitaPayload {
+  idVisita: number
+  resumenTrabajo: string
+  materialesUtilizados: string
+  fechaReporte: string
+}
+
+//interface para enviar email
+interface EnviarEmailPayload {
+  email: string
+}
 
 export const obtenerVisitasDetalladas = async (): Promise<VisitaDetallada[]> => {
   try {
@@ -96,8 +107,8 @@ export async function obtenerVisitasPorTecnico(tecnicoId: number): Promise<Visit
   )
 
   //retonar solo las visitas que esten pendientes o en progreso
-  return data.data.filter(v => v.estado_visita === 'En Progreso')
-  
+  return data.data.filter(v => v.estado_visita === 'En Progreso' || v.estado_visita === 'Pendiente')
+
 
 }
 
@@ -130,7 +141,7 @@ export const crearDetalleVisita = async (
     const payload = {
       idvisita: Number(input.idVisita),
       tipo_registro: input.tipoRegistro.trim() as EstadoDetalleVisita,
-      fecha_hora: fechaSql, 
+      fecha_hora: fechaSql,
       observaciones: input.observaciones ?? null,
     }
 
@@ -153,6 +164,80 @@ export const crearDetalleVisita = async (
     }
   }
 }
+
+export const crearReporteVisita = async (
+  input: CrearReporteVisitaPayload
+): Promise<{ ok: boolean; mensaje: string }> => {
+  try {
+    if (!input.idVisita || isNaN(Number(input.idVisita))) {
+      return { ok: false, mensaje: 'idVisita inválido' }
+    }
+    if (!input.resumenTrabajo?.trim()) {
+      return { ok: false, mensaje: 'resumenTrabajo requerido' }
+    }
+    if (!input.materialesUtilizados?.trim()) {
+      return { ok: false, mensaje: 'materialesUtilizados requerido' }
+    }
+    if (!input.fechaReporte) {
+      return { ok: false, mensaje: 'fechaReporte requerida' }
+    }
+
+    const fecha = new Date(input.fechaReporte)
+    if (isNaN(fecha.getTime())) {
+      return { ok: false, mensaje: 'fechaReporte no es una fecha válida' }
+    }
+    const pad = (n: number) => String(n).padStart(2, '0')
+    // ISO local sin zona: compatible con DateTime.fromISO del backend
+    const fechaIsoLocal =
+      `${fecha.getFullYear()}-${pad(fecha.getMonth() + 1)}-${pad(fecha.getDate())}` +
+      `T${pad(fecha.getHours())}:${pad(fecha.getMinutes())}:${pad(fecha.getSeconds())}`
+
+    const payload = {
+      idVisita: Number(input.idVisita),
+      resumenTrabajo: input.resumenTrabajo.trim(),
+      materialesUtilizados: input.materialesUtilizados.trim(),
+      fechaReporte: fechaIsoLocal,
+    }
+
+    // Ajusta la ruta si tu endpoint difiere
+    const { data } = await axiosClient.post('/api/reporteVisita', payload)
+    return { ok: true, mensaje: data?.mensaje ?? 'Reporte creado' }
+  } catch (error: any) {
+    return {
+      ok: false,
+      mensaje:
+        error?.response?.data?.mensaje ??
+        error?.response?.data?.message ??
+        error?.message ??
+        'Error al crear reporte',
+    }
+  }
+}
+
+export const enviarEmail = async (
+  input: EnviarEmailPayload
+): Promise<{ ok: boolean; mensaje: string }> => {
+  try {
+    if (!input.email?.trim()) {
+      return { ok: false, mensaje: 'email requerido' }
+    }
+    const payload = { email: input.email.trim() }
+    const { data } = await axiosClient.get(`/api/send-email/${encodeURIComponent(payload.email)}`)
+    return { ok: true, mensaje: data?.mensaje ?? 'Email enviado' }
+  } catch (error: any) {
+    return {
+      ok: false,
+      mensaje:
+        error?.response?.data?.mensaje ??
+        error?.response?.data?.message ?? 
+        error?.message ??
+        'Error al enviar email',
+    }
+  }
+}
+
+
+
 
 export const listarSupervisores = () => listarEntidades(1)
 export const listarTecnicos = () => listarEntidades(2)

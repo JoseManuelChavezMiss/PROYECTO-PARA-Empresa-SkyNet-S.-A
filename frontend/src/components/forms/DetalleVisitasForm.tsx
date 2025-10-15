@@ -6,6 +6,7 @@ import { InputTextarea } from 'primereact/inputtextarea';
 import { Button } from 'primereact/button';
 import { crearDetalleVisita, type CrearDetalleVisitaPayload, type EstadoDetalleVisita } from '../../services/VisitasService';
 import { Toast } from 'primereact/toast'
+import ReportesVisitaForm, { type ReportesVisitaFormHandle } from './ReportesVisitaForm';
 
 export interface VisitaParaForm {
   id_visita: string;
@@ -13,6 +14,7 @@ export interface VisitaParaForm {
   fecha_programada: string;
   hora_programada: string;
   observaciones?: string;
+  email?: string;
 }
 
 interface DetalleVisitasFormProps {
@@ -21,14 +23,18 @@ interface DetalleVisitasFormProps {
 
 const DetalleVisitasForm: React.FC<DetalleVisitasFormProps> = ({ visita }) => {
   const [idVisita, setIdVisita] = useState('');
+  const [email, setEmail] = useState('');
   const [tipoRegistro, setTipoRegistro] = useState<EstadoDetalleVisita | null>(null)
   const [fechaHora, setFechaHora] = useState<Date | null>(null);
   const [observaciones, setObservaciones] = useState('');
   const toast = useRef(null);
+  const reporteRef = useRef<ReportesVisitaFormHandle | null>(null)
 
   useEffect(() => {
     if (visita) {
       setIdVisita(visita.id_visita)
+      setEmail(visita.email || '')
+      console.log('Cargando visita en formulario:', visita)
       const isEstadoDetalle = (v: string): v is EstadoDetalleVisita =>
         ['En Progreso', 'Completada', 'Cancelada'].includes(v)
       setTipoRegistro(isEstadoDetalle(visita.estado_visita) ? visita.estado_visita : null)
@@ -82,6 +88,14 @@ const DetalleVisitasForm: React.FC<DetalleVisitasFormProps> = ({ visita }) => {
     } else {
       showError()
     }
+    if (tipoRegistro === 'Completada') {
+        debugger
+      const rep = await reporteRef.current?.submit()
+      if (!rep?.ok) {
+        showError()
+        return
+      }
+    }
   }
   return (
     <div className="p-fluid">
@@ -94,6 +108,11 @@ const DetalleVisitasForm: React.FC<DetalleVisitasFormProps> = ({ visita }) => {
         <label htmlFor="tipo_registro">Estado de la Visita</label>
         <Dropdown id="tipo_registro" value={tipoRegistro} options={tiposDeRegistro} onChange={(e) => setTipoRegistro(e.value)} placeholder="Seleccione un estado" />
       </div>
+      {tipoRegistro === 'Completada' && (
+        <div className="card p-3 my-3" style={{ border: '1px solid #ddd', borderRadius: '6px' }}>
+          <ReportesVisitaForm ref={reporteRef} numero={Number(idVisita)} email={email} />
+        </div>
+      )}
       <div className="p-field mb-3">
         <label htmlFor="fecha_hora">Fecha y Hora</label>
         <Calendar id="fecha_hora" value={fechaHora} onChange={(e) => setFechaHora(e.value as Date | null)} showTime hourFormat="24" disabled />

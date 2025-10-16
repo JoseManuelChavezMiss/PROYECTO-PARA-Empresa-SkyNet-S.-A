@@ -5,15 +5,41 @@ import { HttpContext } from "@adonisjs/core/http";
 import db from "@adonisjs/lucid/services/db";
 
 export default class UsersController {
-  async obtenerUsuarios({ response }: HttpContext) {
+  // async obtenerUsuarios({ response }: HttpContext) {
+  //   try {
+  //     const usuarios = await User.all();
+  //     // console.log(usuarios);
+  //     return response.json(usuarios);
+  //   } catch (error) {
+  //     return response.status(500).json({ mensaje: 'Error al obtener usuarios' });
+  //   }
+  // }
+
+  public async obtenerUsuarios({ response }: HttpContext) {
     try {
-      const usuarios = await User.all();
-      // console.log(usuarios);
-      return response.json(usuarios);
+      const usuarios = await User.query().preload('rol');
+
+      const usuariosConRol = usuarios.map(usuario => {
+        return {
+          id: usuario.id,
+          nombre: usuario.nombre,
+          apellido: usuario.apellido,
+          email: usuario.email,
+          estado: usuario.estado,
+          rolId: usuario.rol_id,
+          rolNombre: usuario.rol ? usuario.rol.name : null, // Cambia a 'name'
+          createdAt: usuario.createdAt,
+          updatedAt: usuario.updatedAt
+        }
+      });
+
+      return response.json(usuariosConRol);
     } catch (error) {
       return response.status(500).json({ mensaje: 'Error al obtener usuarios' });
     }
   }
+
+
 
   public async visitasTecnico({ params, request, response }: HttpContext) {
     try {

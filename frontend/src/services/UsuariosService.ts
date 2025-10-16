@@ -1,15 +1,13 @@
 import axiosClient from "./axiosCliente";
-
-
 export interface ApiUsuario {
   id: number;
   nombre: string;
   apellido: string;
   email: string;
-  estado: boolean | 'true' | 'false'; 
+  estado: boolean | 'true' | 'false';
   rolId: number;
-  createdAt: string;  
-  updatedAt: string; 
+  createdAt: string;
+  updatedAt: string;
   rolNombre: string | null;
 }
 
@@ -30,17 +28,25 @@ export type CrearUsuarioInput = {
   apellido: string;
   email: string;
   password: string;
-  rol_id: number; 
+  rol_id: number;
+};
+
+export type ActualizarUsuarioInput = {
+  nombre?: string;
+  apellido?: string;
+  email?: string;
+  password?: string;
+  rol_id?: number;
 };
 
 const listarUsuarios = async (): Promise<Usuario[]> => {
-    const response = await axiosClient.get<ApiUsuario[]>('/api/usuariosLista');
-    return response.data.map(usuario => ({
-        ...usuario,
-        estado: usuario.estado === true || usuario.estado === 'true',
-        createdAt: new Date(usuario.createdAt),
-        updatedAt: new Date(usuario.updatedAt),
-    }));
+  const response = await axiosClient.get<ApiUsuario[]>('/api/usuariosLista');
+  return response.data.map(usuario => ({
+    ...usuario,
+    estado: usuario.estado === true || usuario.estado === 'true',
+    createdAt: new Date(usuario.createdAt),
+    updatedAt: new Date(usuario.updatedAt),
+  }));
 };
 
 const crearUsuario = async (
@@ -55,5 +61,61 @@ const crearUsuario = async (
 }
 
 
+const actualizarUsuario = async (
+  id: number,
+  input: ActualizarUsuarioInput
+): Promise<{ usuario: ApiUsuario; mensaje?: string }> => {
+  const { data } = await axiosClient.put<{ mensaje?: string; user?: ApiUsuario }>(
+    `/api/actualizarUsuario/${id}`,
+    input
+  )
+  if (!data?.user) throw new Error(data?.mensaje || 'No se pudo actualizar el usuario')
+  return { usuario: data.user, mensaje: data.mensaje }
+}
 
-export { listarUsuarios, crearUsuario };
+const obtenerUsuario = async (id: number): Promise<Usuario> => {
+  const response = await axiosClient.get<any>(`/api/usuariosObtener/${id}`);
+  const usuarioData = response.data.user;
+
+  if (!usuarioData) {
+    throw new Error('No se encontraron datos del usuario en la respuesta');
+  }
+
+  const parseDate = (dateString: string | number | Date): Date => {
+    const date = new Date(dateString);
+    return isNaN(date.getTime()) ? new Date() : date;
+  };
+
+  return {
+    id: usuarioData.id,
+    nombre: usuarioData.nombre,
+    apellido: usuarioData.apellido,
+    email: usuarioData.email,
+    estado: usuarioData.estado === true || usuarioData.estado === 'true',
+    rolId: usuarioData.rol_id,
+    rolNombre: usuarioData.rolNombre,
+    createdAt: parseDate(usuarioData.createdAt),
+    updatedAt: parseDate(usuarioData.updatedAt),
+  };
+};
+
+// En UsuariosService.ts
+
+const actualizarEstadoUsuario = async (id: number, estado: boolean): Promise<{ mensaje: string; user: ApiUsuario }> => {
+  const { data } = await axiosClient.put<{ mensaje: string; user: ApiUsuario }>(
+    `/api/eliminarUsuario/${id}/estado`,
+    { estado }
+  );
+  
+  // Si necesitas transformar los datos:
+  return {
+    mensaje: data.mensaje,
+    user: {
+      ...data.user,
+      // Transformaciones adicionales si son necesarias
+    }
+  };
+};
+
+
+export { listarUsuarios, crearUsuario, actualizarUsuario, obtenerUsuario, actualizarEstadoUsuario };

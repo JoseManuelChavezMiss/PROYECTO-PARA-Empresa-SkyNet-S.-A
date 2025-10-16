@@ -53,4 +53,35 @@ const crearCliente = async (
 };
 
 
+// En services/ClientesService.ts
+export const obtenerCliente = async (id: number): Promise<Cliente> => {
+  try {
+    const response = await axiosClient.get(`api/obtenerCliente/${id}`);
+    return response.data.data;
+  } catch (error: any) {
+    console.error('Error al obtener el cliente:', error);
+    throw new Error(error.response?.data?.mensaje || 'Error al obtener el cliente');
+  }
+};
+
+export const actualizarCliente = async (id: number, datos: any) => {
+  try {
+    const response = await axiosClient.put(`api/actualizarCliente/${id}`, datos);
+    return response.data;
+  } catch (error: any) {
+    console.error('Error al actualizar cliente:', error);
+    throw new Error(error.response?.data?.mensaje || 'Error al actualizar el cliente');
+  }
+};
+
+// services/ClientesService.ts
+export const actualizarEstadoCliente = async (id: number) => {
+  try {
+    const response = await axiosClient.put(`/api/eliminarCliente/${id}/estado`);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.mensaje || 'Error al cambiar el estado del cliente');
+  }
+};
+
 export { listarClientes, crearCliente };

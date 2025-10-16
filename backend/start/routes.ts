@@ -36,6 +36,7 @@ router.group(() => {
 
     router.get('/usuariosObtener/:id', [AuthController, 'obtenerUsuario'])
       .as('usuarios.obtener')
+
       .use(middleware.moduloAccess())
     router.put('/actualizarUsuario/:id', [AuthController, 'actualizarUsuario'])
       .as('usuarios.actualizar')
@@ -52,6 +53,18 @@ router.group(() => {
     router.get('/clientesLista', [ClientesController, 'listar'])
       .as('clientes.listar')
       .use(middleware.moduloAccess())
+
+    router.put('/actualizarCliente/:id', [ClientesController, 'actualizarCliente'])
+      .as('clientes.actualizar')
+      .use(middleware.moduloAccess())
+    
+    router.get('/obtenerCliente/:id', [ClientesController, 'obtenerCliente'])
+      .as('clientes.obtener')
+      .use(middleware.moduloAccess())
+      
+    router.put('/eliminarCliente/:id/estado', [ClientesController, 'actualizarEstado'])
+      .as('clientes.eliminar')
+      .use(middleware.moduloAccess()) 
 
     /*
          Rutas para todo lo relacionado con las visitas      

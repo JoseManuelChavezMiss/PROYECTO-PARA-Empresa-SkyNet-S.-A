@@ -1,19 +1,8 @@
-// import type { HttpContext } from '@adonisjs/core/http'
-
 import User from "#models/user";
 import { HttpContext } from "@adonisjs/core/http";
 import db from "@adonisjs/lucid/services/db";
 
 export default class UsersController {
-  // async obtenerUsuarios({ response }: HttpContext) {
-  //   try {
-  //     const usuarios = await User.all();
-  //     // console.log(usuarios);
-  //     return response.json(usuarios);
-  //   } catch (error) {
-  //     return response.status(500).json({ mensaje: 'Error al obtener usuarios' });
-  //   }
-  // }
 
   public async obtenerUsuarios({ response }: HttpContext) {
     try {
@@ -27,7 +16,7 @@ export default class UsersController {
           email: usuario.email,
           estado: usuario.estado,
           rolId: usuario.rol_id,
-          rolNombre: usuario.rol ? usuario.rol.name : null, // Cambia a 'name'
+          rolNombre: usuario.rol ? usuario.rol.name : null,
           createdAt: usuario.createdAt,
           updatedAt: usuario.updatedAt
         }
@@ -52,15 +41,12 @@ export default class UsersController {
       if (isNaN(tecnicoId) || tecnicoId <= 0) {
         return response.badRequest({ mensaje: 'El tecnicoId proporcionado no es válido' })
       }
-
-      // Consulta corregida con el Query Builder de Lucid
       const filas = await db
         .from('visitas as V')
         .select(
           'V.id as id_visita',
           'U.nombre as nombre_tecnico',
           'U.apellido as apellido_tecnico',
-          // Usamos db.raw para poder usar funciones de SQL como CONCAT
           db.raw("CONCAT(C.nombre, ' ', C.apellido) as nombre_cliente"),
           'C.latitud',
           'C.longitud',
@@ -79,7 +65,7 @@ export default class UsersController {
         // --- FIN DE CORRECCIONES ---
         .where('R.name', 'Tecnico')
         .andWhere('U.id', tecnicoId)
-        .orderBy('V.fecha_programada', 'desc') // Agregamos el ordenamiento
+        .orderBy('V.fecha_programada', 'desc')
 
       return response.ok({ ok: true, total: filas.length, data: filas })
     } catch (e) {

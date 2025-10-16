@@ -1,15 +1,19 @@
-
 import { useState, useRef } from "react";
 import ClientesCrearMap from "../maps/ClientesCrearMap";
 import { crearCliente } from "../../services/ClientesService";
 import { Toast } from "primereact/toast";
 import { useToast } from "../../hooks/useToast";
-import { listarClientes } from "../../services/ClientesService";
 
-const ClientesForm = () => {
+// Definimos las props para que incluya onClienteCreado
+interface ClientesFormProps {
+  onClienteCreado?: () => void;
+}
+
+const ClientesForm = ({ onClienteCreado }: ClientesFormProps) => {
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [loading, setLoading] = useState(false);
   const { showToast, toast } = useToast();
+  const formRef = useRef<HTMLFormElement>(null);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -39,10 +43,21 @@ const ClientesForm = () => {
       const { cliente, mensaje } = await crearCliente(input);
       console.log("Creado:", cliente);
       showToast({ severity: "info", summary: "Cliente creado", detail: mensaje ?? "Cliente creado correctamente", life: 4000 });
-      listarClientes()
+      
+      // Limpiar el formulario
+      if (formRef.current) {
+        formRef.current.reset();
+      }
       setCoords(null);
+
+      // Llamar al callback para notificar al componente padre
+      if (onClienteCreado) {
+        onClienteCreado();
+      }
     } catch (err: any) {
       console.error("Error al crear cliente:", err);
+      // Mostrar un toast de error si es necesario
+      showToast({ severity: "error", summary: "Error al crear cliente", detail: err.message, life: 4000 });
     } finally {
       setLoading(false);
     }
@@ -51,7 +66,7 @@ const ClientesForm = () => {
   return (
     <>
       <Toast ref={toast} position="top-right" />
-      <form className="p-fluid" onSubmit={handleSubmit}>
+      <form className="p-fluid" onSubmit={handleSubmit} ref={formRef}>
         <div className="field">
           <label htmlFor="nombre">Nombre</label>
           <input id="nombre" name="nombre" className="p-inputtext" placeholder="Nombre" />

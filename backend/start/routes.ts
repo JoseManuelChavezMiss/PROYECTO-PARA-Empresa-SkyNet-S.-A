@@ -17,6 +17,7 @@ import DetallevisitasController from '#controllers/detallevisitas_controller'
 import ReportesVisitasController from '#controllers/reportes_visitas_controller'
 import MailersController from '#controllers/mailers_controller'
 import ReportsController from '#controllers/reportes_controller'
+import SupervisorTecnicosController from '#controllers/supervisor_tecnicos_controller'
 
 router.get('/', async () => {
   return {
@@ -41,7 +42,7 @@ router.group(() => {
     router.put('/actualizarUsuario/:id', [AuthController, 'actualizarUsuario'])
       .as('usuarios.actualizar')
       .use(middleware.moduloAccess())
-    
+
     router.put('/eliminarUsuario/:id/estado', [AuthController, 'actualizarEstado'])
       .as('usuarios.eliminar')
       .use(middleware.moduloAccess())
@@ -57,14 +58,59 @@ router.group(() => {
     router.put('/actualizarCliente/:id', [ClientesController, 'actualizarCliente'])
       .as('clientes.actualizar')
       .use(middleware.moduloAccess())
-    
+
     router.get('/obtenerCliente/:id', [ClientesController, 'obtenerCliente'])
       .as('clientes.obtener')
       .use(middleware.moduloAccess())
-      
+
     router.put('/eliminarCliente/:id/estado', [ClientesController, 'actualizarEstado'])
       .as('clientes.eliminar')
-      .use(middleware.moduloAccess()) 
+      .use(middleware.moduloAccess())
+
+
+    router.post('/asignarTecnicoSupervisor', [SupervisorTecnicosController, 'asignarTecnicoSupervisor'])
+      .as('usuarios.asignar')
+      .use(middleware.moduloAccess())
+
+    router.get('/listarTecnicosSupervisores', [SupervisorTecnicosController, 'listarTecnicosSupervisores'])
+      .as('usuarios.listarTecnicosSupervisores')
+      .use(middleware.moduloAccess())
+
+    router.get('/listarSupervisoresActivos', [SupervisorTecnicosController, 'listarSupervisoresActivos'])
+      .as('usuarios.listarSupervisoresActivos')
+      .use(middleware.moduloAccess())
+
+    router.get('/listarTecnicosDisponibles', [SupervisorTecnicosController, 'listarTecnicosDisponibles'])
+      .as('usuarios.listarTecnicosDisponibles')
+      .use(middleware.moduloAccess())
+
+    router.delete('/desasignarTecnicoSupervisor/:tecnicoId', [SupervisorTecnicosController, 'eliminarAsignacion'])
+      .as('usuarios.desasignar')
+      .use(middleware.moduloAccess())
+
+    router.get('/tecnicosPorSupervisor/:supervisorId', [SupervisorTecnicosController, 'listarTecnicosPorSupervisor'])
+      .as('visitas.tecnicosPorSupervisor')
+      .use(middleware.moduloAccess())
+
+    router.get('/listarVisitasPorSupervisor/:supervisorId', [SupervisorTecnicosController, 'listarVisitasPorSupervisor'])
+      .as('visitas.porSupervisor')
+      .use(middleware.moduloAccess())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /*
          Rutas para todo lo relacionado con las visitas      

@@ -64,19 +64,19 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ visible, setVisible }) => {
               {/* MENÚ PRINCIPAL */}
               <div className="overflow-y-auto mt-4">
                 <ul className="list-none p-3 m-0">
-                  
+
                   {/* DASHBOARD  solo visible para el administrador*/}
                   {isAdmin && (
-                  <li>
-                    <a
-                      onClick={() => go('/dashboard')}
-                      className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full"
-                    >
-                      <i className="pi pi-th-large mr-2"></i>
-                      <span className="font-medium">Dashboard</span>
-                      <Ripple />
-                    </a>
-                  </li>
+                    <li>
+                      <a
+                        onClick={() => go('/dashboard')}
+                        className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full"
+                      >
+                        <i className="pi pi-th-large mr-2"></i>
+                        <span className="font-medium">Dashboard</span>
+                        <Ripple />
+                      </a>
+                    </li>
                   )}
 
                   {/* VISITAS - solo para Administrador y Supervisor */}
@@ -116,6 +116,19 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ visible, setVisible }) => {
                       >
                         <i className="pi pi-users mr-2"></i>
                         <span className="font-medium">Clientes</span>
+                        <Ripple />
+                      </a>
+                    </li>
+                  )}
+                  {/* ASIGNAR TÉCNICO A SUPERVISOR - solo Administrador */}
+                  {isAdmin && (
+                    <li>
+                      <a
+                        onClick={() => go('/asignar-tecnico-supervisor')}
+                        className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full"
+                      >
+                        <i className="pi pi-user-plus mr-2"></i>
+                        <span className="font-medium">Asignar Técnico a Supervisor</span>
                         <Ripple />
                       </a>
                     </li>

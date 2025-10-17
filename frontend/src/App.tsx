@@ -11,6 +11,8 @@ import UsuariosPage from "./pages/UsuariosPage";
 import ClientesPage from "./pages/ClientesPage";
 import VisitasPage from "./pages/VisitasPage";
 import VisitasTecnico from "./pages/VisitasTecnico";
+import AsignarTecnicosSupervisoresPage from "./pages/AsignarTecnicosSupervisoresPage";
+import VisitasSupervisorPage from "./pages/VisitasSupervisorPage";
 
 function App() {
   return (
@@ -59,6 +61,22 @@ function App() {
             element={
               <PrivateRoute roles={["Tecnico"]}>
                 <VisitasTecnico />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/asignar-tecnico-supervisor"
+            element={
+              <PrivateRoute roles={["Administrador"]}>
+                <AsignarTecnicosSupervisoresPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/visitas-supervisor"
+            element={
+              <PrivateRoute roles={["Supervisor"]}>
+                <VisitasSupervisorPage />
               </PrivateRoute>
             }
           />

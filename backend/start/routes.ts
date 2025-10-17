@@ -35,16 +35,19 @@ router.group(() => {
       .as('usuarios.crear')
       .use(middleware.moduloAccess())
 
-    router.get('/usuariosObtener/:id', [AuthController, 'obtenerUsuario'])
+    router.get('/usuariosObtener/:id', [UsersController, 'obtenerUsuario'])
       .as('usuarios.obtener')
 
       .use(middleware.moduloAccess())
-    router.put('/actualizarUsuario/:id', [AuthController, 'actualizarUsuario'])
+    router.put('/actualizarUsuario/:id', [UsersController, 'actualizarUsuario'])
       .as('usuarios.actualizar')
       .use(middleware.moduloAccess())
 
-    router.put('/eliminarUsuario/:id/estado', [AuthController, 'actualizarEstado'])
-      .as('usuarios.eliminar')
+    // router.put('/eliminarUsuario/:id/estado', [UsersController, 'actualizarEstado'])
+    //   .as('usuarios.eliminar')
+    //   .use(middleware.moduloAccess())
+    router.put('/eliminarUsuario/:id/estado', [UsersController, 'actualizarEstado'])
+      .as('usuarios.actualizarEstado')
       .use(middleware.moduloAccess())
 
     router.post('/registrarCliente', [ClientesController, 'registrar'])

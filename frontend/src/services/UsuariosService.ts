@@ -4,7 +4,7 @@ export interface ApiUsuario {
   nombre: string;
   apellido: string;
   email: string;
-  estado: boolean | 'true' | 'false';
+  estado: boolean | 'true' | 'false' | 1 | 0 | '1' | '0';
   rolId: number;
   createdAt: string;
   updatedAt: string;
@@ -43,7 +43,7 @@ const listarUsuarios = async (): Promise<Usuario[]> => {
   const response = await axiosClient.get<ApiUsuario[]>('/api/usuariosLista');
   return response.data.map(usuario => ({
     ...usuario,
-    estado: usuario.estado === true || usuario.estado === 'true',
+    estado: usuario.estado === true || usuario.estado === 'true' || usuario.estado === 1 || usuario.estado === '1',
     createdAt: new Date(usuario.createdAt),
     updatedAt: new Date(usuario.updatedAt),
   }));
@@ -101,21 +101,13 @@ const obtenerUsuario = async (id: number): Promise<Usuario> => {
 
 // En UsuariosService.ts
 
-const actualizarEstadoUsuario = async (id: number, estado: boolean): Promise<{ mensaje: string; user: ApiUsuario }> => {
-  const { data } = await axiosClient.put<{ mensaje: string; user: ApiUsuario }>(
+export const actualizarEstadoUsuario = async (id: number, estado: boolean): Promise<{ mensaje: string; data: ApiUsuario }> => {
+  const { data } = await axiosClient.put<{ mensaje: string; data: ApiUsuario }>(
     `/api/eliminarUsuario/${id}/estado`,
     { estado }
   );
-  
-  // Si necesitas transformar los datos:
-  return {
-    mensaje: data.mensaje,
-    user: {
-      ...data.user,
-      // Transformaciones adicionales si son necesarias
-    }
-  };
+
+  return data;
 };
 
-
-export { listarUsuarios, crearUsuario, actualizarUsuario, obtenerUsuario, actualizarEstadoUsuario };
+export { listarUsuarios, crearUsuario, actualizarUsuario, obtenerUsuario };

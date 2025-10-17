@@ -52,7 +52,14 @@ const UsuariosPage = () => {
     const handleCambiarEstado = async (usuario: Usuario) => {
         try {
             const nuevoEstado = !usuario.estado;
-            await actualizarEstadoUsuario(usuario.id, nuevoEstado);
+            console.log('🔄 Iniciando cambio de estado...');
+            console.log('📋 Datos del usuario:', usuario);
+            console.log('🎯 Estado actual:', usuario.estado);
+            console.log('🎯 Nuevo estado deseado:', nuevoEstado);
+
+            const resultado = await actualizarEstadoUsuario(usuario.id, nuevoEstado);
+            console.log('✅ Resultado de la API:', resultado);
+
             // Actualizar el estado local
             setUsuarios(prev => prev.map(u =>
                 u.id === usuario.id ? { ...u, estado: nuevoEstado } : u
@@ -63,11 +70,12 @@ const UsuariosPage = () => {
                 summary: `Usuario ${nuevoEstado ? 'activado' : 'desactivado'} correctamente`
             });
         } catch (error: any) {
-            const msg = error?.message || error?.response?.data?.mensaje || 'Error al cambiar estado';
+            console.error('❌ Error completo:', error);
+            const msg = error?.response?.data?.mensaje || error?.message || 'Error al cambiar estado';
+            console.error('❌ Mensaje de error:', msg);
             showToast({ severity: 'error', summary: msg });
         }
     };
-
     // Función para confirmar cambio de estado
     const confirmarCambioEstado = (usuario: Usuario) => {
         const accion = usuario.estado ? 'desactivar' : 'activar';

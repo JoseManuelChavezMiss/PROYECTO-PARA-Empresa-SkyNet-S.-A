@@ -1,7 +1,6 @@
 import { useRef, useState, forwardRef, useImperativeHandle } from 'react'
 import { InputTextarea } from 'primereact/inputtextarea'
 import { Calendar } from 'primereact/calendar'
-import { Button } from 'primereact/button'
 import { Toast } from 'primereact/toast'
 import { crearReporteVisita, enviarEmail } from '../../services/VisitasService'
 
@@ -39,8 +38,23 @@ const ReportesVisitaForm = forwardRef<ReportesVisitaFormHandle, ReportesVisitaFo
       // El servicio normaliza a ISO local sin "Z"
       fechaReporte: fechaReporte.toISOString(),
     })
-    //enviar email de notificacion al cliente
-    const emailResp = await enviarEmail({ email })
+
+    // const reporteEnviarDatosCorreo = {
+    //   resumenTrabajo: resumenTrabajo,
+    //   materialesUtilizados: materialesUtilizados,
+    //   fechaReporte: fechaReporte,
+
+    // }
+
+    const emailResp = await enviarEmail({
+      email: email,
+      reporte: {
+        resumenTrabajo: resumenTrabajo,
+        materialesUtilizados: materialesUtilizados,
+        fechaReporte: fechaReporte,
+      }
+    })
+
     if (!emailResp.ok) {
       notify('error', emailResp.mensaje ?? 'Error al enviar email')
     }
@@ -120,21 +134,6 @@ const ReportesVisitaForm = forwardRef<ReportesVisitaFormHandle, ReportesVisitaFo
             touchUI
           />
         </div>
-        {/* 
-        <div className="flex gap-2 mt-3">
-          <Button type="submit" label="Guardar reporte" icon="pi pi-save" loading={loading} />
-          <Button
-            type="button"
-            label="Limpiar"
-            icon="pi pi-refresh"
-            className="p-button-secondary"
-            onClick={() => {
-              setResumenTrabajo('')
-              setMaterialesUtilizados('')
-              setFechaReporte(new Date())
-            }}
-          />
-        </div> */}
       </form>
     </div>
   )

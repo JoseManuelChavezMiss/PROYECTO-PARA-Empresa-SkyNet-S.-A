@@ -214,27 +214,89 @@ export const crearReporteVisita = async (
   }
 }
 
+// interface EnviarEmailPayload {
+//   email: string
+// }
+
+
+
+// export const enviarEmail = async (
+//   input: EnviarEmailPayload
+// ): Promise<{ ok: boolean; mensaje: string; data?: any }> => {
+//   try {
+//     if (!input.email?.trim()) {
+//       return { ok: false, mensaje: 'Email requerido' }
+//     }
+
+//     const email = input.email.trim()
+    
+//     // Usar el email en la URL como parámetro
+//     const { data } = await axiosClient.post(`/api/send-email/${email}`)
+
+//     return { 
+//       ok: true, 
+//       mensaje: data?.message ?? 'Email enviado exitosamente',
+//       data: data?.data 
+//     }
+//   } catch (error: any) {
+//     console.error('Error al enviar email:', error)
+    
+//     return {
+//       ok: false,
+//       mensaje:
+//         error?.response?.data?.message ??
+//         error?.response?.data?.mensaje ??
+//         error?.message ??
+//         'Error al enviar email',
+//     }
+//   }
+// }
+
+
+interface EnviarEmailPayload {
+  email: string
+  reporte?: {
+    resumenTrabajo: string
+    materialesUtilizados: string
+    fechaReporte: Date
+  }
+}
+
 export const enviarEmail = async (
   input: EnviarEmailPayload
-): Promise<{ ok: boolean; mensaje: string }> => {
+): Promise<{ ok: boolean; mensaje: string; data?: any }> => {
   try {
     if (!input.email?.trim()) {
-      return { ok: false, mensaje: 'email requerido' }
+      return { ok: false, mensaje: 'Email requerido' }
     }
-    const payload = { email: input.email.trim() }
-    const { data } = await axiosClient.get(`/api/send-email/${encodeURIComponent(payload.email)}`)
-    return { ok: true, mensaje: data?.mensaje ?? 'Email enviado' }
+
+    const email = input.email.trim()
+    
+    // ✅ CORREGIDO: Enviar el reporte en el body de la solicitud
+    const { data } = await axiosClient.post(`/api/send-email/${email}`, {
+      reporte: input.reporte
+    })
+
+    return { 
+      ok: true, 
+      mensaje: data?.message ?? 'Email enviado exitosamente',
+      data: data?.data 
+    }
   } catch (error: any) {
+    console.error('Error al enviar email:', error)
+    
     return {
       ok: false,
       mensaje:
+        error?.response?.data?.message ??
         error?.response?.data?.mensaje ??
-        error?.response?.data?.message ?? 
         error?.message ??
         'Error al enviar email',
     }
   }
 }
+
+
 
 
 

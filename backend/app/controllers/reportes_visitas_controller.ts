@@ -32,5 +32,7 @@ export default class ReportesVisitasController {
             return response.status(500).json({ error })
         }
     }
+
+    
     
 }

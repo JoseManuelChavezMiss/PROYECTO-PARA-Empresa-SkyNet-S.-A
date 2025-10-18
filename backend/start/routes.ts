@@ -141,7 +141,7 @@ router.group(() => {
       .as('visitas.reporte')
       .use(middleware.moduloAccess())
 
-    router.get('/send-email/:email', [MailersController, 'send'])
+    router.post('/send-email/:email', [MailersController, 'send'])
 
     // Reportes de Visitas
     router.post('/reportes/eficiencia-tecnicos', [ReportsController, 'eficienciaTecnicos'])

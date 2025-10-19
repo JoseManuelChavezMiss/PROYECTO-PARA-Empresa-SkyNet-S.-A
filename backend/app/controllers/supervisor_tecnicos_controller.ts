@@ -122,9 +122,9 @@ export default class SupervisorTecnicosController {
                 .join('rols as r', 'u.rol_id', 'r.id')
                 .where('r.name', 'Supervisor')
                 .where((query) => {
-                    query.where('U.estado', 'true')
-                        .orWhere('U.estado', '1')
-                        .orWhere('U.estado', 1)
+                    query.where('u.estado', 'true')
+                        .orWhere('u.estado', '1')
+                        .orWhere('u.estado', 1)
                 })
                 .select(
                     'u.id',

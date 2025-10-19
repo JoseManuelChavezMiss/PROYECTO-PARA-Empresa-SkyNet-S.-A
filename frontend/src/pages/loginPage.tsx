@@ -31,7 +31,7 @@ export default function LoginPage() {
                 if (response.user.rol.nombre === 'Administrador') {
                     navigate('/usuarios');
                 } else if (response.user.rol.nombre === 'Supervisor') {
-                    navigate('/visitas');
+                    navigate('/visitas-supervisor');
                 }
                 else if (response.user.rol.nombre === 'Tecnico') {
                     navigate('/visitas-tecnico');

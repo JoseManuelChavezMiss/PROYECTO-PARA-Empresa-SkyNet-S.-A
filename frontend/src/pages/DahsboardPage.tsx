@@ -25,6 +25,7 @@ import {
   type TendenciaMensual,
   type VisitaReporteGeneral
 } from '../services/ReportesService';
+import { useNavigate } from 'react-router-dom';
 
 // Definir tipos para los datos del dashboard
 interface VisitaPeriodo {
@@ -48,6 +49,7 @@ interface ChartData {
 }
 
 const DashboardPage = () => {
+  const navigate = useNavigate();
   const [pieChartData, setPieChartData] = useState<ChartData>({
     labels: [],
     datasets: []
@@ -668,13 +670,13 @@ const DashboardPage = () => {
         <h3 className="text-lg font-bold mb-4">Accesos rápidos</h3>
         <div className="grid">
           <div className="col-6 md:col-3">
-            <Button label="Usuarios" icon="pi pi-users" className="w-full p-3 shadow-2 border-round" />
+            <Button label="Usuarios" icon="pi pi-users" className="w-full p-3 shadow-2 border-round" onClick={() => navigate('/usuarios')} />
           </div>
           <div className="col-6 md:col-3">
-            <Button label="Clientes" icon="pi pi-building" className="w-full p-3 shadow-2 border-round" />
+            <Button label="Clientes" icon="pi pi-building" className="w-full p-3 shadow-2 border-round" onClick={() => navigate('/clientes')} />
           </div>
           <div className="col-6 md:col-3">
-            <Button label="Visitas" icon="pi pi-calendar" className="w-full p-3 shadow-2 border-round" />
+            <Button label="Visitas" icon="pi pi-calendar" className="w-full p-3 shadow-2 border-round" onClick={() => navigate('/visitas')} />
           </div>
           <div className="col-6 md:col-3">
             <Button 

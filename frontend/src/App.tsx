@@ -51,7 +51,7 @@ function App() {
           <Route
             path="/visitas"
             element={
-              <PrivateRoute roles={["Administrador", "Supervisor"]}>
+              <PrivateRoute roles={["Administrador"]}>
                 <VisitasPage />
               </PrivateRoute>
             }

@@ -80,7 +80,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ visible, setVisible }) => {
                   )}
 
                   {/* VISITAS - solo para Administrador y Supervisor */}
-                  {(isAdmin || supervisor) && (
+                  {(isAdmin) && (
                     <li>
                       <a
                         onClick={() => go('/visitas')}
@@ -108,7 +108,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ visible, setVisible }) => {
                   )}
 
                   {/* CLIENTES - visible para Administrador y Supervisor */}
-                  {(isAdmin || supervisor) && (
+                  {(isAdmin) && (
                     <li>
                       <a
                         onClick={() => go('/clientes')}
@@ -147,6 +147,20 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ visible, setVisible }) => {
                       </a>
                     </li>
                   )}
+
+                  {supervisor && (
+                    <li>
+                      <a
+                        onClick={() => go('/visitas-supervisor')}
+                        className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full"
+                      >
+                        <i className="pi pi-id-card mr-2"></i>
+                        <span className="font-medium">Visitas Supervisor</span>
+                        <Ripple />
+                      </a>
+                    </li>
+                  )}
+                  
                 </ul>
               </div>
 

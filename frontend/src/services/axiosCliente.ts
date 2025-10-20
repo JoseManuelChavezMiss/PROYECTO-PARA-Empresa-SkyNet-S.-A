@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosClient = axios.create({
-    baseURL: 'https://apiadonis.privados.space',
+    baseURL: 'http://localhost:3333',
     withCredentials: true
 });
 

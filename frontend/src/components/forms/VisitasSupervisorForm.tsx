@@ -79,7 +79,7 @@ const VisitasSupervisorForm = ({ onVisitaCreada }: { onVisitaCreada?: () => void
     }
     const payload = {
       clienteId: selectedCliente.id,
-      supervisorId: supervisorId, // Usamos el supervisorId del localStorage
+      supervisorId: supervisorId,
       tecnicoId: selectedTecnico.tecnico_id,
       fechaProgramada,
       horaProgramada,

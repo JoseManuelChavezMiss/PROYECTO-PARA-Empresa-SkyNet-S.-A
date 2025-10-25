@@ -26,7 +26,7 @@ const VisitasPage = () => {
   const columns = [
     { field: "idVisita", header: "ID" },
     {
-      field: "clienteNombreCompleto",            // <-- agrega field (ColumnDef lo exige)
+      field: "clienteNombreCompleto",          
       header: "Cliente",
       body: (row: VisitaDetallada) => `${row.nombreCliente} ${row.apellidoCliente}`,
     },

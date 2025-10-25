@@ -14,7 +14,7 @@ export default class DetallevisitasController {
                 fechaHora: fecha_hora,
                 observaciones
             })
-            //actualizamos el estado de la tabla visitas
+            
             const visita = await detalleVisita.related('visita').query().first()
             if (visita) {
                 visita.estadoVisita = tipo_registro

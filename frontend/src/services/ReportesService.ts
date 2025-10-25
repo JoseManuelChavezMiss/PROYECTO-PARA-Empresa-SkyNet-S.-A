@@ -161,7 +161,6 @@ const handleApiCall = async (endpoint: string, payload?: any) => {
   }
 };
 
-// Funciones para consumir los reportes - VERSIÓN MEJORADA
 
 /**
  * 1. Reporte de Eficiencia de Técnicos

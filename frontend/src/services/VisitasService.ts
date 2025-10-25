@@ -128,7 +128,7 @@ export const crearDetalleVisita = async (
       return { ok: false, mensaje: 'fechaHora requerida' }
     }
 
-    // Convertir fecha a formato SQL (YYYY-MM-DD HH:mm:ss) para evitar errores al no parsear en el controlador
+    // Convertir fecha a formato SQL (YYYY-MM-DD HH:mm:ss)
     const fecha = new Date(input.fechaHora)
     if (isNaN(fecha.getTime())) {
       return { ok: false, mensaje: 'fechaHora no es una fecha válida' }
@@ -187,7 +187,7 @@ export const crearReporteVisita = async (
       return { ok: false, mensaje: 'fechaReporte no es una fecha válida' }
     }
     const pad = (n: number) => String(n).padStart(2, '0')
-    // ISO local sin zona: compatible con DateTime.fromISO del backend
+    
     const fechaIsoLocal =
       `${fecha.getFullYear()}-${pad(fecha.getMonth() + 1)}-${pad(fecha.getDate())}` +
       `T${pad(fecha.getHours())}:${pad(fecha.getMinutes())}:${pad(fecha.getSeconds())}`
@@ -214,45 +214,6 @@ export const crearReporteVisita = async (
   }
 }
 
-// interface EnviarEmailPayload {
-//   email: string
-// }
-
-
-
-// export const enviarEmail = async (
-//   input: EnviarEmailPayload
-// ): Promise<{ ok: boolean; mensaje: string; data?: any }> => {
-//   try {
-//     if (!input.email?.trim()) {
-//       return { ok: false, mensaje: 'Email requerido' }
-//     }
-
-//     const email = input.email.trim()
-    
-//     // Usar el email en la URL como parámetro
-//     const { data } = await axiosClient.post(`/api/send-email/${email}`)
-
-//     return { 
-//       ok: true, 
-//       mensaje: data?.message ?? 'Email enviado exitosamente',
-//       data: data?.data 
-//     }
-//   } catch (error: any) {
-//     console.error('Error al enviar email:', error)
-    
-//     return {
-//       ok: false,
-//       mensaje:
-//         error?.response?.data?.message ??
-//         error?.response?.data?.mensaje ??
-//         error?.message ??
-//         'Error al enviar email',
-//     }
-//   }
-// }
-
-
 interface EnviarEmailPayload {
   email: string
   reporte?: {
@@ -272,7 +233,7 @@ export const enviarEmail = async (
 
     const email = input.email.trim()
     
-    // ✅ CORREGIDO: Enviar el reporte en el body de la solicitud
+    
     const { data } = await axiosClient.post(`/api/send-email/${email}`, {
       reporte: input.reporte
     })

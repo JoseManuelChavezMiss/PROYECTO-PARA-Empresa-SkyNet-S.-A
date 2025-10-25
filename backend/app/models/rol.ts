@@ -12,13 +12,13 @@ export default class Rol extends BaseModel {
   @column()
   declare name: string
 
-  // ✅ Relación uno a muchos: Un rol puede tener muchos usuarios
+  //Relación uno a muchos: Un rol puede tener muchos usuarios
   @hasMany(() => User, {
     foreignKey: 'rol_id',
   })
   declare users: HasMany<typeof User>
 
-  // ✅ Relación muchos a muchos: Un rol puede tener muchos módulos
+  //Relación muchos a muchos: Un rol puede tener muchos módulos
   @manyToMany(() => Modulo, {
     pivotTable: 'modulo_rols',
     localKey: 'id',

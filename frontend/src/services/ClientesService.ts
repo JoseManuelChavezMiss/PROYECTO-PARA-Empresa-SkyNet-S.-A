@@ -53,7 +53,7 @@ const crearCliente = async (
 };
 
 
-// En services/ClientesService.ts
+// En services ClientesService
 export const obtenerCliente = async (id: number): Promise<Cliente> => {
   try {
     const response = await axiosClient.get(`api/obtenerCliente/${id}`);

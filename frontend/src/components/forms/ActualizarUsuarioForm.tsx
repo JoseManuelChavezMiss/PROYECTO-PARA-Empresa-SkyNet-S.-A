@@ -42,7 +42,7 @@ export default function ActualizarUsuarioForm({ usuarioId, onSuccess, onCancel }
         nombre: usuario.nombre || "",
         apellido: usuario.apellido || "",
         email: usuario.email || "",
-        password: "" // No cargamos la contraseña por seguridad
+        password: ""
       });
       setRolId(usuario.rolId || null);
     } catch (error) {
@@ -66,7 +66,7 @@ export default function ActualizarUsuarioForm({ usuarioId, onSuccess, onCancel }
     try {
       setCargando(true);
       
-      // Preparar datos para enviar (si password está vacío, no lo enviamos)
+      // Preparar datos para enviar
       const datosActualizacion: any = {
         ...form,
         rol_id: Number(rolId)

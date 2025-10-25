@@ -19,11 +19,11 @@ interface AuthUser {
 }
 
 interface AuthResponse {
-  status: number;        // viene en el JSON (200)
-  mensaje: string;       // "Login exitoso"
-  type: string;          // "Bearer"
-  token: string;         // JWT / token
-  user: AuthUser;        // objeto usuario completo
+  status: number;
+  mensaje: string;       
+  type: string;          
+  token: string;         
+  user: AuthUser;       
 }
 
 interface LogoutResponse {

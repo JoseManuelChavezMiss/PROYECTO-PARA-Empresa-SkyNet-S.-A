@@ -1,5 +1,3 @@
-// import type { HttpContext } from '@adonisjs/core/http'
-
 import Cliente from "#models/clientes";
 import User from "#models/user";
 import Visita from "#models/visitas";
@@ -64,7 +62,7 @@ export default class VisitasController {
             'observaciones',
         ])
 
-        // Validar FKs (deben existir)
+        
         const [cliente, supervisor, tecnico] = await Promise.all([
             Cliente.find(datos.clienteId),
             User.find(datos.supervisorId),

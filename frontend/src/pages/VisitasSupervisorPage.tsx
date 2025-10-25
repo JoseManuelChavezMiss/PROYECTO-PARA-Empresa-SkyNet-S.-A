@@ -45,7 +45,7 @@ const VisitasSupervisorPage = () => {
   // Función cuando se crea una nueva visita
   const handleVisitaCreada = () => {
     setFormVisible(false)
-    cargarVisitas() // Recargar la lista de visitas
+    cargarVisitas()
   }
 
   // Columnas para la tabla

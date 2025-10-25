@@ -18,7 +18,7 @@ export default class ClientesController {
                 direccion: datos.direccion,
                 latitud: datos.latitud,
                 longitud: datos.longitud,
-                estado: true // Por defecto, el estado es true (activo)
+                estado: true
             })
             return response.status(200).json({
                 mensaje: 'Cliente registrado exitosamente',
@@ -50,18 +50,15 @@ export default class ClientesController {
 
     //actualizar cliente
     async actualizarCliente({ params, request, response }: HttpContext) {
-        // 1. Validar que el ID del parámetro existe
         if (!params.id) {
             return response.status(400).json({
                 mensaje: 'Error: Se requiere el ID del cliente'
             })
         }
 
-        // 2. Definir y validar campos permitidos
         const datosPermitidos = ['nombre', 'apellido', 'email', 'telefono', 'direccion', 'latitud', 'longitud']
         const datos = request.only(datosPermitidos)
 
-        // 3. Validar que hay datos para actualizar
         if (Object.keys(datos).length === 0) {
             return response.status(400).json({
                 mensaje: 'Error: No se proporcionaron datos para actualizar'
@@ -69,10 +66,8 @@ export default class ClientesController {
         }
 
         try {
-            // 4. Buscar el cliente
             const cliente = await Cliente.findOrFail(params.id)
 
-            // 5. Validar email único (opcional pero recomendado)
             if (datos.email && datos.email !== cliente.email) {
                 const clienteExistente = await Cliente.findBy('email', datos.email)
                 if (clienteExistente) {
@@ -82,8 +77,7 @@ export default class ClientesController {
                 }
             }
 
-            // 6. Actualizar campos
-            cliente.merge(datos) // Método más eficiente que asignar campo por campo
+            cliente.merge(datos) 
             await cliente.save()
 
             return response.status(200).json({
@@ -92,7 +86,6 @@ export default class ClientesController {
             })
 
         } catch (error) {
-            // 7. Manejar diferentes tipos de errores
             if (error.code === 'E_ROW_NOT_FOUND') {
                 return response.status(404).json({
                     mensaje: 'Error: Cliente no encontrado'
@@ -143,7 +136,7 @@ export default class ClientesController {
 
         try {
             const cliente = await Cliente.findOrFail(params.id)
-            // toggle invierte el valor booleano del campo
+
             await cliente.merge({ estado: !cliente.estado }).save()
             return response.status(200).json({
                 mensaje: 'Estado del cliente actualizado',

@@ -21,7 +21,7 @@ axiosClient.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       console.warn('No autorizado (401).')
-      // opcional: redirigir a login
+      
     }
     return Promise.reject(error)
   }

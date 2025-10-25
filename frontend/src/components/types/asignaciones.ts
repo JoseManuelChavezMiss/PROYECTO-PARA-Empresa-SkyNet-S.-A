@@ -1,7 +1,7 @@
 import { type SupervisorActivo, type TecnicoDisponible } from '../../services/AsignarTecnicosSupervisoresService';
 
 export interface TecnicoNodeData {
-  id: number; // asignacion_id
+  id: number;
   nombre: string;
   rol: string;
   tipo: string;

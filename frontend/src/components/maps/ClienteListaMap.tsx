@@ -6,8 +6,8 @@ import { mapPk } from "../../services/axiosCliente";
 type Props = {
   lat: number;
   lng: number;
-  zoom?: number;           // opcional (default 14)
-  height?: string | number; // opcional (default '60vh')
+  zoom?: number;           
+  height?: string | number; 
 };
 
 const ClienteListaMap = ({ lat, lng, zoom = 14, height = "60vh" }: Props) => {
@@ -15,7 +15,7 @@ const ClienteListaMap = ({ lat, lng, zoom = 14, height = "60vh" }: Props) => {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markerRef = useRef<mapboxgl.Marker | null>(null);
 
-  // Init map (no interacción) y marker no-draggable
+  
   useEffect(() => {
     mapboxgl.accessToken = mapPk;
 
@@ -46,7 +46,7 @@ const ClienteListaMap = ({ lat, lng, zoom = 14, height = "60vh" }: Props) => {
         mapRef.current = null;
       }
     };
-  }, []); // init una vez
+  }, []); 
 
   // Actualiza centro/marker cuando cambian coords o zoom
   useEffect(() => {

@@ -49,7 +49,7 @@ const TreeTableAsignaciones = ({ nodes, onEliminarAsignacion }: TreeTableAsignac
           tooltip="Desasignar técnico"
           tooltipOptions={{ position: 'top' }}
           onClick={() => onEliminarAsignacion(
-            data.id, // asignacion_id
+            data.id,
             data.nombre,
             supervisorPadre?.data.nombre || 'Supervisor'
           )}

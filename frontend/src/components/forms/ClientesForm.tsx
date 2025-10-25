@@ -56,7 +56,7 @@ const ClientesForm = ({ onClienteCreado }: ClientesFormProps) => {
       }
     } catch (err: any) {
       console.error("Error al crear cliente:", err);
-      // Mostrar un toast de error si es necesario
+      
       showToast({ severity: "error", summary: "Error al crear cliente", detail: err.message, life: 4000 });
     } finally {
       setLoading(false);

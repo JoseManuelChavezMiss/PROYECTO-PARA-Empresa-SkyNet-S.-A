@@ -45,7 +45,7 @@ export default function LoginPage() {
                 });
             }
         } catch (error: any) {
-            // Intenta extraer el mensaje personalizado del servidor
+            
             let detail = 'Error de inicio de sesión';
             if (error?.response?.data?.mensaje) {
                 detail = error.response.data.mensaje;

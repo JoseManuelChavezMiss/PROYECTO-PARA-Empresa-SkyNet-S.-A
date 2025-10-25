@@ -60,7 +60,7 @@ export default class SupervisorTecnicosController {
                 .innerJoin('rols as RS', 'RS.id', 'S.rol_id')
                 .innerJoin('rols as RT', 'RT.id', 'T.rol_id')
                 .select([
-                    'ST.id as asignacion_id', // ← AÑADIR ESTA LÍNEA
+                    'ST.id as asignacion_id',
                     'S.id as supervisor_id',
                     db.raw("CONCAT(S.nombre, ' ', S.apellido) AS supervisor_nombre"),
                     'RS.name as supervisor_rol',
@@ -92,7 +92,7 @@ export default class SupervisorTecnicosController {
 
                 // Agregar técnico al supervisor
                 supervisor.tecnicos.push({
-                    asignacion_id: relacion.asignacion_id, // ← AÑADIR ESTA LÍNEA
+                    asignacion_id: relacion.asignacion_id,
                     tecnico_id: relacion.tecnico_id,
                     tecnico_nombre: relacion.tecnico_nombre,
                     tecnico_rol: relacion.tecnico_rol,
@@ -150,7 +150,7 @@ export default class SupervisorTecnicosController {
     }
 
     /**
-     * Obtener lista de técnicos activos (sin supervisor asignado)
+     * Obtener lista de técnicos activos sin supervisor asignado
      */
     public async listarTecnicosDisponibles({ response }: HttpContext) {
         try {
